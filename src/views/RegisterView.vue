@@ -218,7 +218,7 @@ const handelSubmit = async () => {
     // eslint-disable-next-line no-undef
     const fetchApi = await axios.post(`${import.meta.env.VITE_BASE_URL_API}/register`, formData)
     const { data } = await fetchApi
-    console.log(data)
+    // console.log(data)
     if (data?.status === 200) {
       toastStore.active('success', 'Register account is successed')
     } else if (data.status === 400) {

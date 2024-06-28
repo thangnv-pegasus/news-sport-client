@@ -15,7 +15,7 @@ export default {
         'arround-sm': '0 0 2px rgba(0,0,0,0.5)'
       },
       borderColor: {
-        baseColor: 'rgb(211, 47, 47)'
+        baseColor: 'rgb(211, 47, 47) !important'
       },
       backgroundColor: {
         baseColor: 'rgb(211, 47, 47)'

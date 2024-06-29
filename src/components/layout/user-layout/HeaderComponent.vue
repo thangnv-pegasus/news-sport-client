@@ -14,6 +14,8 @@
           :key="index"
           :to="'/category/' + item.id"
           class="py-4 px-2 transition-all ease-linear hover:text-baseColor"
+          active-class="text-baseColor"
+          exact-active-class="text-baseColor"
         >
           {{ item.name }}
         </router-link>

@@ -27,13 +27,7 @@
       </div>
       <div class="mt-5">
         <h2 class="font-semibold text-xl">Comments</h2>
-        <div class="flex flex-col min-h-80 overflow-y-auto">
-          <comment-item
-            v-for="(comment, index) of comments"
-            :key="index"
-            :comment="comment"
-          ></comment-item>
-        </div>
+        <comment-section :postId="post.id"></comment-section>
       </div>
     </section>
   </main>
@@ -43,13 +37,12 @@
 import axios from 'axios'
 import moment from 'moment'
 import { onBeforeMount, ref } from 'vue'
-import CommentItem from '@/components/comment/CommentItem.vue'
+import CommentSection from '@/components/comment/CommentSection.vue'
 import { useRoute } from 'vue-router'
 
 const router = useRoute()
 const post = ref({})
 const author = ref({})
-const comments = ref([])
 const likeTotal = ref(0)
 
 onBeforeMount(async () => {
@@ -59,7 +52,6 @@ onBeforeMount(async () => {
   const { data } = await response.data
   post.value = data.post
   author.value = data.author
-  comments.value = data.comments
   likeTotal.value = data.likeCount
 })
 </script>

@@ -52,7 +52,7 @@
 
 <script setup>
 import axios from 'axios'
-import { onBeforeMount, ref, watch } from 'vue'
+import { onBeforeMount, onUpdated, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import CategoryTitle from '@/components/CategoryTitle.vue'
 import CategoryNav from '@/components/CategoryNav.vue'
@@ -62,13 +62,13 @@ const route = useRoute()
 const posts = ref([])
 const category = ref({})
 const currentPage = ref(1)
-const id = route.params.id
+const id = ref(1)
 const pages = ref([])
 
 const getdata = async () => {
   // console.log(id)
   const response = await axios.get(
-    `${import.meta.env.VITE_BASE_URL_API}/posts-category/${id}?page=${currentPage.value}`
+    `${import.meta.env.VITE_BASE_URL_API}/posts-category/${id.value}?page=${currentPage.value}`
   )
   const { data } = await response
   // pages.value = new Array(data.posts.last_page)
@@ -84,11 +84,15 @@ const binddingPage = (index) => {
   return 'border-gray-300 text-444'
 }
 
-watch(currentPage, async () => {
+watch([currentPage, id], async () => {
   getdata()
 })
 
 onBeforeMount(async () => {
   getdata()
+})
+
+onUpdated(() => {
+  id.value = route.params.id
 })
 </script>

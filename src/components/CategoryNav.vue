@@ -16,13 +16,13 @@
 
 <script setup>
 import axios from 'axios'
-import { onBeforeMount, ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import PostShort from '@/components/product/PostShort.vue'
 
 const props = defineProps(['id'])
 const posts = ref([])
 
-onBeforeMount(async () => {
+watchEffect(async () => {
   try {
     const response = await axios.get(
       `${import.meta.env.VITE_BASE_URL_API}/posts-of-category?id=${props.id}`

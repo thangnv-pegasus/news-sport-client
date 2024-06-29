@@ -13,8 +13,9 @@ import { far } from '@fortawesome/free-regular-svg-icons'
 import Vue3Toasity from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import { useAuthStore } from './stores/auth'
-
+import PrimeVue from 'primevue/config'
 library.add(fas, far, fab)
+import Aura from '@primevue/themes/aura'
 dom.watch()
 
 const app = createApp(App)
@@ -26,6 +27,16 @@ app.use(Vue3Toasity, {
   // ...
 })
 app.component('font-awesome-icon', FontAwesomeIcon)
+app.use(PrimeVue, {
+  theme: {
+    preset: Aura,
+    options: {
+      prefix: 'p',
+      darkModeSelector: 'none',
+      cssLayer: false
+    }
+  }
+})
 
 const authStore = useAuthStore()
 authStore.active().finally(() => app.mount('#app'))

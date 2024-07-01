@@ -7,6 +7,8 @@ import ProfileView from '@/views/ProfileView.vue'
 import SearchView from '@/views/SearchView.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
+import EditPostView from '@/views/EditPostView.vue'
+import EditProfileView from '@/views/EditProfileView.vue'
 import DefaultLayout from '@/components/layout/user-layout/DefaultLayout.vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import { useAuthStore } from '@/stores/auth'
@@ -58,6 +60,18 @@ const userRoutes = [
     path: '/register',
     name: 'register',
     component: RegisterView
+  },
+  {
+    path: '/edit-post/:id',
+    name: 'edit-post',
+    component: EditPostView,
+    meta: { requiresAuth: true, role: 'user' | 'admin' }
+  },
+  {
+    path: '/edit-profile',
+    name: 'edit-profile',
+    component: EditProfileView,
+    meta: { requiresAuth: true, role: 'user' | 'admin' }
   }
 ]
 

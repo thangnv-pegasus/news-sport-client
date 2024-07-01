@@ -14,12 +14,17 @@
           <font-awesome-icon :icon="['far', 'clock']" />
           <span>{{ moment(post.created_at).format('DD/MM/YYYY') }}</span>
         </p>
+        <p v-if="router.query.type === 'preview'" class="w-[1.5px] bg-gray-600 h-5"></p>
+        <p v-if="router.query.type === 'preview'">
+          status: <span :class="binddingStatus(post.status)">{{ post.status }}</span>
+        </p>
       </div>
       <div class="mt-10">
         <figure class="w-full h-[600px] rounded-md overflow-hidden">
           <img
-            :src="post.image"
+            :src="base_url + post.image"
             :alt="post.title"
+            :onError="handleImageError"
             class="w-full h-full object-cover object-center block"
           />
         </figure>
@@ -44,10 +49,25 @@ const router = useRoute()
 const post = ref({})
 const author = ref({})
 const likeTotal = ref(0)
+const base_url = import.meta.env.VITE_BASE_URL_BE
+
+const handleImageError = (e) => {
+  e.target.src = post.value.image
+}
+
+const binddingStatus = (status) => {
+  if (status === 'accept') {
+    return 'text-green-500 font-semibold'
+  } else if (status === 'reject') {
+    return 'text-baseColor font-semibold'
+  } else {
+    return 'text-orange-500 font-semibold'
+  }
+}
 
 onBeforeMount(async () => {
+  window.scrollTo(0, 0)
   const id = router.params.id
-
   const response = await axios.get(`${import.meta.env.VITE_BASE_URL_API}/post/${id}`)
   const { data } = await response.data
   post.value = data.post

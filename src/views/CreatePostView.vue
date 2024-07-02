@@ -83,12 +83,10 @@ const handleSubmit = async () => {
   try {
     loading.value = true
     const dataForm = new FormData()
-    console.log({ fileInput: fileInput.value.files[0] })
     dataForm.append('image', fileInput.value.files[0])
     dataForm.append('title', title.value)
     dataForm.append('content', editorContent.value)
     dataForm.append('category_id', categoryId.value)
-    // console.log({ dataForm: dataForm.get('image') })
     const response = await axios.post(
       `${import.meta.env.VITE_BASE_URL_API}/create-post`,
       dataForm,
@@ -100,15 +98,17 @@ const handleSubmit = async () => {
       }
     )
     const { data } = await response
-    console.log('response', data)
-    loading.value = false
-    toastStore.active('success', 'Thanks for new post, please wait to admin accept!')
-    title.value = ''
-    editorContent.value = ''
-    categoryId.value = 1
-    fileInput.value.files = null
+    if (data.status === 200) {
+      loading.value = false
+      toastStore.active('success', 'Thanks for new post, please wait to admin accept!')
+      title.value = ''
+      editorContent.value = ''
+      categoryId.value = 1
+      fileInput.value.files = null
+    } else {
+      toastStore.active('error', 'Error!')
+    }
   } catch (e) {
-    // console.log(e)
     loading.value = false
     toastStore.active('error', JSON.stringify(e))
   }

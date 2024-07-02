@@ -11,11 +11,9 @@ onBeforeMount(async () => {
     const response = await axios.get(`${import.meta.env.VITE_BASE_URL_API}/home`)
     const { data } = await response
     categories.value = data.categories
-    console.log(data)
   } catch (e) {
     console.log(e)
   }
-  // console.log(categories.value)
 })
 </script>
 

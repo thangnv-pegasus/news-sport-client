@@ -88,17 +88,11 @@ const handleSubmit = async () => {
     dataForm.append('title', title.value)
     dataForm.append('content', editorContent.value)
     dataForm.append('category_id', categoryId.value)
-    console.log({ dataform: dataForm.get('title') })
-    console.log({
-      title: title.value,
-      content: editorContent.value,
-      categoryId: categoryId.value
-    })
-    const response = await axios.patch(
+    const response = await axios.post(
       `${import.meta.env.VITE_BASE_URL_API}/update-post?id=${route.params.id}`,
       dataForm,
       {
-        method: 'patch',
+        method: 'post',
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('token'),
           'Content-Type': 'multipart/form-data'
@@ -106,7 +100,6 @@ const handleSubmit = async () => {
       }
     )
     const { data } = await response
-    console.log(data)
     if (data.status === 200) {
       loading.value = false
       toastStore.active('success', 'Thanks for new post, please wait to admin accept!')
@@ -118,7 +111,6 @@ const handleSubmit = async () => {
       toastStore.active('error', "Opps! You don't create new post right now!")
     }
   } catch (e) {
-    // console.log(e)
     loading.value = false
     toastStore.active('error', JSON.stringify(e))
   }
@@ -131,7 +123,6 @@ watchEffect(async () => {
   const postId = route.params.id
   const response2 = await axios.get(`${import.meta.env.VITE_BASE_URL_API}/post/${postId}`)
   const data2 = await response2.data
-  console.log(data2.data.post)
   if (data2.data.post) {
     title.value = data2.data.post.title
     fileInput.value = data2.data.post.image

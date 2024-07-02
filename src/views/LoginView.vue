@@ -137,11 +137,10 @@ const handleSubmit = async () => {
   } else {
     const fetchData = await axios.post(`${import.meta.env.VITE_BASE_URL_API}/login`, formData)
     const { data } = await fetchData
-    // console.log(data)
-    if (data && data?.status === 200) {
-      router.push('/')
-      authStore.active(data.user)
+    if (data && data?.status === 200 && data.user) {
       localStorage.setItem('token', data.token)
+      authStore.login(data.user, data.token)
+      router.push('/')
     } else {
       formErrors.value = { ...data.errors }
       toastStore.active('warning', 'Sign-in is failed! Please check errors')

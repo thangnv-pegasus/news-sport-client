@@ -29,7 +29,6 @@ watchEffect(async () => {
     )
     const { data } = await response
     posts.value = data.posts
-    console.log(data)
   } catch (e) {
     console.log(e)
   }

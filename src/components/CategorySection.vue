@@ -28,6 +28,5 @@ const props = defineProps(['category'])
 let banner = 'https://placehold.it/500x200'
 if (props.category.posts.length > 0) {
   banner = props.category.posts[0].image
-  // console.log(props.category.posts)
 }
 </script>

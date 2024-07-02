@@ -9,6 +9,7 @@
                 :src="authStore.auth.user.avatar"
                 alt="avatar"
                 class="w-full h-full object-cover object-center block"
+                @error="handleError"
               />
             </figure>
             <div class="tracking-wider">
@@ -150,7 +151,6 @@ const handleDelete = async (id) => {
     }
   })
   const { data } = await response
-  console.log(data)
   if (data.status === 200) {
     toastStore.active('success', 'Delete post is successed')
     // eslint-disable-next-line vue/no-mutating-props
@@ -158,6 +158,10 @@ const handleDelete = async (id) => {
   } else {
     toastStore.active('error', 'Delete post is failed')
   }
+}
+
+const handleError = (e) => {
+  e.target.src = import.meta.env.VITE_BASE_URL_BE + authStore.auth.user.avatar
 }
 
 watchEffect(async () => {

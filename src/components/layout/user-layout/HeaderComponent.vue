@@ -48,15 +48,16 @@
         >
           <font-awesome-icon :icon="['fas', 'pen-nib']" />
         </router-link>
-        <div v-show="auth" class="ml-5 relative">
+        <div v-if="auth.fullname" class="ml-5 relative">
           <figure
             class="w-7 h-7 overflow-hidden rounded-full cursor-pointer select-none"
             @click="showUserAction = !showUserAction"
           >
             <img
-              v-bind:src="auth?.avatar"
+              :src="auth?.avatar"
               alt="avatar"
               class="object-cover object-center w-full h-full block"
+              @error="handleError"
             />
           </figure>
           <div
@@ -69,6 +70,7 @@
                   :src="auth?.avatar"
                   alt="avatar"
                   class="w-full h-full object-cover object-center block"
+                  @error="handleError"
                 />
               </router-link>
               <div class="pl-4">
@@ -79,11 +81,19 @@
                 >
                   Manage your profile
                 </router-link>
+                <router-link
+                  to="/profile"
+                  class="block text-sm lowercase underline hover:text-baseColor"
+                  v-if="auth.role === 'admin'"
+                >
+                  Manage website
+                </router-link>
               </div>
             </div>
             <button
               type="button"
               class="mt-4 block w-full py-1 rounded-full border-[1px] border-solid border-baseColor text-baseColor transition-all ease-linear duration-200 hover:border-transparent hover:text-white hover:bg-baseColor"
+              @click="handleLogout"
             >
               log out
             </button>
@@ -92,7 +102,7 @@
         <router-link
           to="/login"
           class="border-2 border-solid border-baseColor text-baseColor ml-5 py-1 px-5 rounded-full transition-all ease-linear hover:border-transparent hover:bg-baseColor hover:text-white"
-          v-if="!auth"
+          v-if="!auth?.fullname"
         >
           Log in
         </router-link>
@@ -103,11 +113,14 @@
 
 <script setup>
 import { useAuthStore } from '@/stores/auth.js'
-import { onBeforeMount, ref } from 'vue'
+import useToastStore from '@/stores/toast'
+import axios from 'axios'
+import { onBeforeMount, ref, watchEffect } from 'vue'
 const categories = ref([])
-const auth = ref({})
 const showUserAction = ref(false)
-
+const authStore = useAuthStore()
+const auth = ref(null)
+const toastStore = useToastStore()
 const getCategories = async () => {
   const fetchApi = await fetch('http://127.0.0.1:8000/api/categories')
   const { data } = await fetchApi.json()
@@ -117,8 +130,39 @@ const getCategories = async () => {
 onBeforeMount(async () => {
   const data = await getCategories()
   categories.value = data
-  const authStore = useAuthStore()
-  auth.value = authStore.auth.user
-  // console.log(authStore.auth.user.avatar)
 })
+
+watchEffect(() => {
+  auth.value = authStore.getUser
+})
+
+const handleError = (e) => {
+  e.target.src = import.meta.env.VITE_BASE_URL_BE + authStore.auth.user.avatar
+}
+
+const handleLogout = async () => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL_API}/logout`,
+      {},
+      {
+        method: 'post',
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }
+    )
+    const { data } = await response
+    if (data.status === 200) {
+      toastStore.active('success', 'good bye!')
+      authStore.logout()
+      localStorage.removeItem('token')
+    } else {
+      toastStore.active('error', 'Logout is failed')
+    }
+  } catch (e) {
+    toastStore.active('error', 'Logout is failed')
+    console.log(e)
+  }
+}
 </script>

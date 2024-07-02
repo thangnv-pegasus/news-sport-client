@@ -66,15 +66,12 @@ const id = ref(1)
 const pages = ref([])
 
 const getdata = async () => {
-  // console.log(id)
   const response = await axios.get(
     `${import.meta.env.VITE_BASE_URL_API}/posts-category/${id.value}?page=${currentPage.value}`
   )
   const { data } = await response
-  // pages.value = new Array(data.posts.last_page)
   category.value = data.category
   posts.value = data.posts.data
-  // console.log(posts)
 }
 
 const binddingPage = (index) => {

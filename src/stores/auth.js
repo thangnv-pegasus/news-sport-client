@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
@@ -18,15 +18,34 @@ export const useAuthStore = defineStore('auth', () => {
         }
       })
       const { data } = await response
-      // console.log(data.user)
       auth.value.token = token
       auth.value.user = data.user
     }
   }
 
-  const logout = watch(auth, () => {
-    auth.value = {}
+  const getUser = computed(() => {
+    if (auth.value?.user) {
+      return auth.value.user
+    }
+    return {}
   })
 
-  return { auth, active, logout }
+  const login = (user, token) => {
+    auth.value.user = user
+    auth.value.token = token
+  }
+
+  const updateAvatar = (avatar) => {
+    auth.value.user.avatar = avatar
+  }
+
+  const logout = () => {
+    auth.value = {}
+  }
+
+  const updateProfile = (user) => {
+    auth.value.user = user
+  }
+
+  return { auth, active, logout, updateAvatar, updateProfile, login, getUser }
 })

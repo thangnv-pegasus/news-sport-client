@@ -12,6 +12,7 @@ import EditProfileView from '@/views/EditProfileView.vue'
 import DefaultLayout from '@/components/layout/user-layout/DefaultLayout.vue'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import { useAuthStore } from '@/stores/auth'
+import DashboardView from '@/views/admin/DashboardView.vue'
 
 const userRoutes = [
   {
@@ -54,12 +55,14 @@ const userRoutes = [
   {
     path: '/login',
     name: 'login',
-    component: LoginView
+    component: LoginView,
+    meta: { requiresGuest: true, role: 'guest' }
   },
   {
     path: '/register',
     name: 'register',
-    component: RegisterView
+    component: RegisterView,
+    meta: { requiresGuest: true, role: 'guest' }
   },
   {
     path: '/edit-post/:id',
@@ -75,6 +78,15 @@ const userRoutes = [
   }
 ]
 
+const adminroutes = [
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: DashboardView,
+    meta: { requiresAuth: true, role: 'admin' }
+  }
+]
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -86,18 +98,25 @@ const router = createRouter({
     {
       path: '/admin',
       component: AdminLayout,
-      children: []
+      children: adminroutes
     }
   ]
 })
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  const user = authStore.auth.user
+  const user = authStore.getUser
+  const token = localStorage.getItem('token')
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!user) {
       next({ name: 'Login' })
     } else if (to.meta.role && to.meta.role !== user.role) {
       next({ name: 'Home' })
+    } else {
+      next()
+    }
+  } else if (to.matched.some((record) => record.meta.requiresGuest)) {
+    if (token) {
+      next({ name: 'home' })
     } else {
       next()
     }

@@ -18,8 +18,7 @@ export const useAuthStore = defineStore('auth', () => {
         }
       })
       const { data } = await response
-      auth.value.token = token
-      auth.value.user = data.user
+      login(data.user, token)
     }
   }
 

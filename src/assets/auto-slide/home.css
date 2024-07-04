@@ -1,0 +1,15 @@
+.swiper-button-prev {
+  top: 80px;
+  left: 350px;
+  user-select: none;
+}
+.swiper-button-next {
+  top: 80px;
+  right: 50px;
+  user-select: none;
+}
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  font-size: 20px;
+  color: white;
+}

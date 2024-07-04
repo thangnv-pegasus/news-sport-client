@@ -82,7 +82,7 @@
                   Manage your profile
                 </router-link>
                 <router-link
-                  to="/profile"
+                  to="/admin/dashboard"
                   class="block text-sm lowercase underline hover:text-baseColor"
                   v-if="auth.role === 'admin'"
                 >

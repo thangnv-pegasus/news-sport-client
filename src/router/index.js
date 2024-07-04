@@ -10,7 +10,7 @@ import RegisterView from '@/views/RegisterView.vue'
 import EditPostView from '@/views/EditPostView.vue'
 import EditProfileView from '@/views/EditProfileView.vue'
 import DefaultLayout from '@/components/layout/user-layout/DefaultLayout.vue'
-import AdminLayout from '@/components/layout/AdminLayout.vue'
+import AdminLayout from '@/components/layout/admin-layout/AdminLayout.vue'
 import { useAuthStore } from '@/stores/auth'
 import DashboardView from '@/views/admin/DashboardView.vue'
 
@@ -31,10 +31,9 @@ const userRoutes = [
     component: CategoryView
   },
   {
-    path: '/create-post',
-    name: 'create-post',
-    component: CreatePostView,
-    meta: { requiresAuth: true, role: 'user' | 'admin' }
+    path: '/search',
+    name: 'search',
+    component: SearchView
   },
   {
     path: '/detail-post/:id',
@@ -42,27 +41,16 @@ const userRoutes = [
     component: DetailPostView
   },
   {
+    path: '/create-post',
+    name: 'create-post',
+    component: CreatePostView,
+    meta: { requiresAuth: true, role: 'user' | 'admin' }
+  },
+  {
     path: '/profile',
     name: 'profile',
     component: ProfileView,
     meta: { requiresAuth: true, role: 'user' | 'admin' }
-  },
-  {
-    path: '/search',
-    name: 'search',
-    component: SearchView
-  },
-  {
-    path: '/login',
-    name: 'login',
-    component: LoginView,
-    meta: { requiresGuest: true, role: 'guest' }
-  },
-  {
-    path: '/register',
-    name: 'register',
-    component: RegisterView,
-    meta: { requiresGuest: true, role: 'guest' }
   },
   {
     path: '/edit-post/:id',
@@ -75,15 +63,33 @@ const userRoutes = [
     name: 'edit-profile',
     component: EditProfileView,
     meta: { requiresAuth: true, role: 'user' | 'admin' }
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginView,
+    meta: { requiresGuest: true, role: 'guest' }
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterView,
+    meta: { requiresGuest: true, role: 'guest' }
   }
 ]
 
-const adminroutes = [
+const adminRoutes = [
   {
-    path: '/dashboard',
+    path: '',
+    name: 'admin-home',
+    component: DashboardView,
+    meta: { requiresAdmin: true, role: 'admin' }
+  },
+  {
+    path: 'dashboard',
     name: 'dashboard',
     component: DashboardView,
-    meta: { requiresAuth: true, role: 'admin' }
+    meta: { requiresAdmin: true, role: 'admin' }
   }
 ]
 
@@ -98,27 +104,38 @@ const router = createRouter({
     {
       path: '/admin',
       component: AdminLayout,
-      children: adminroutes
+      children: adminRoutes
     }
   ]
 })
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
-  const user = authStore.getUser
+  let user = authStore.getUser
+
   const token = localStorage.getItem('token')
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!user) {
-      next({ name: 'Login' })
-    } else if (to.meta.role && to.meta.role !== user.role) {
-      next({ name: 'Home' })
-    } else {
-      next()
-    }
-  } else if (to.matched.some((record) => record.meta.requiresGuest)) {
-    if (token) {
+
+  if (!user?.role && token) {
+    await authStore.active()
+    user = authStore.getUser
+  }
+
+  if (to.matched.some((record) => record.meta.requiresGuest)) {
+    if (user || token) {
       next({ name: 'home' })
     } else {
       next()
+    }
+  } else if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (user.role === 'admin' || user.role === 'user') {
+      next()
+    } else {
+      next({ name: 'home' })
+    }
+  } else if (to.matched.some((record) => record.meta.requiresAdmin)) {
+    if (user.role === 'admin') {
+      next()
+    } else {
+      next({ name: 'home' })
     }
   } else {
     next()

@@ -13,6 +13,8 @@ import DefaultLayout from '@/components/layout/user-layout/DefaultLayout.vue'
 import AdminLayout from '@/components/layout/admin-layout/AdminLayout.vue'
 import { useAuthStore } from '@/stores/auth'
 import DashboardView from '@/views/admin/DashboardView.vue'
+import ManageUserView from '@/views/admin/ManageUserView.vue'
+import ManagePostView from '@/views/admin/ManagePostView.vue'
 
 const userRoutes = [
   {
@@ -89,6 +91,18 @@ const adminRoutes = [
     path: 'dashboard',
     name: 'dashboard',
     component: DashboardView,
+    meta: { requiresAdmin: true, role: 'admin' }
+  },
+  {
+    path: 'users',
+    name: 'users',
+    component: ManageUserView,
+    meta: { requiresAdmin: true, role: 'admin' }
+  },
+  {
+    path: 'posts',
+    name: 'posts',
+    component: ManagePostView,
     meta: { requiresAdmin: true, role: 'admin' }
   }
 ]

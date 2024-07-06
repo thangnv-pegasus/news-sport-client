@@ -4,7 +4,8 @@ export default {
   theme: {
     extend: {
       width: {
-        container: '1200px'
+        container: '1200px',
+        '480px': '30rem'
       },
       textColor: {
         baseColor: 'rgb(211, 47, 47)',
